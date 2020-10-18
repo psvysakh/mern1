@@ -22,7 +22,7 @@ const app=express();
 /* const MONGODB_URI= */ // online db uri
 const MONGODB_URI = process.env.MONGO_LOCAL_DATABASE; // local db uri
 
-const port = process.env.PORT || 8001;
+
 
 mongoose.connect(MONGODB_URI,{
     useNewUrlParser:true,
@@ -44,7 +44,4 @@ app.use(cookieParser());
 app.use('/api',userRoutes);
 
 
-app.listen(port,()=>{
-    console.log(`Server is running on port ${port}`);
-})
-
+module.exports=app;
