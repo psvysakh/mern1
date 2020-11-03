@@ -14,8 +14,15 @@ const userSchema = new Schema({
             lowercase:true
         },
         password:{
+            type:String,
+        },
+        secretToken:{
             type:String
+        },
+        isActive:{
+            type:Boolean
         }
+      
     },
     google:{
         id:{
@@ -45,7 +52,7 @@ const userSchema = new Schema({
     }
 },{timestamps:true});
 
-userSchema.pre('save',async function(next){
+/* userSchema.pre('save',async function(next){
     try{
         if(this.method !== 'local'){return next();}
         const hashpass = await bcrypt.hash(this.local.password,12);
@@ -54,10 +61,11 @@ userSchema.pre('save',async function(next){
     }catch(error){
     next(error);
 } 
-});
+}); */
 
 userSchema.methods.isValidPassword = async function(newPassword){
         try{
+            
             return await bcrypt.compare(newPassword,this.local.password);
 
         }catch(error){

@@ -1,0 +1,25 @@
+button{
+    border-radius: 1px !important;
+    &.logout{
+        background: transparent;
+    }
+    &.signup{
+        background: rgb(25, 133, 206);
+        color:#fff;
+    }
+    &.signin{
+        background: rgba(11, 201, 74, 0.993);
+        color:#fff;
+    }
+}
+
+button[type="submit"]{
+    &.signup:hover{
+        background: rgb(29, 90, 180);
+        color:#fff;
+    }
+    &.signin:hover{
+        background: rgba(11, 182, 68, 0.993);
+        color:#fff;
+    }
+}
