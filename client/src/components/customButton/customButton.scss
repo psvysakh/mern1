@@ -1,5 +1,13 @@
 button{
-    border-radius: 1px !important;
+    border-radius: 50px !important;
+    height: 45px;
+    background: transparent;
+    text-align: center;
+  
+    &.submit{
+        background: rgb(25, 133, 206);
+        color:#fff;
+    }
     &.logout{
         background: transparent;
     }
@@ -11,14 +19,35 @@ button{
         background: rgba(11, 201, 74, 0.993);
         color:#fff;
     }
+    &.reset{
+        background: rgba(11, 201, 74, 0.993);
+        color:#fff;
+    }
+    &.goback{
+        background: rgba(97, 97, 97, 0.993);
+        color:#fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+        position: absolute;
+    }
 }
 
 button[type="submit"]{
+    width: 100%;
+    &.submit:hover{
+        background: rgb(29, 90, 180);
+        color:#fff;
+    }
     &.signup:hover{
         background: rgb(29, 90, 180);
         color:#fff;
     }
     &.signin:hover{
+        background: rgba(11, 182, 68, 0.993);
+        color:#fff;
+    }
+    &.reset:hover{
         background: rgba(11, 182, 68, 0.993);
         color:#fff;
     }

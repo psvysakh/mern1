@@ -4,116 +4,117 @@ import authActiontype from './auth.type';
 const INITIAL_STATE={
     isAuthenticated:false,
     token:'',
-    signUp:{
-        message:'',
-        errorMsg:''
-    },
-    emailVerify:{
-        message:'',
-        errorMsg:''
-    },
-    signIn:{
-        message:'',
-        errorMsg:''
-    },
-    signOut:{
-        message:''
-    }
-
+    requesting: false,
+    successful: false,
+    messages:'',
+    errors:'',
 }
+
 
 const authReducer=(state=INITIAL_STATE,action)=>{
     switch(action.type){
-        case authActiontype.SIGNUP_COMPLETE:
+        case authActiontype.SIGNUP_REQUESTING:
+            return{
+                    ...state,
+                    requesting:true,
+                    successful:false,
+                    messages:'',
+                    errors:''
+                }
+        case authActiontype.SIGNUP_SUCCESS:
             return{
                 ...state,
-                signUp:{
-                    message:action.payload.message,
-                    errorMsg:''
-                }
+                requesting: false,
+                successful: true,
+                messages:action.payload,
+                errors:'',
             }
-        case authActiontype.EMAIL_VERIFIED:
+        case authActiontype.SIGNUP_FAILURE:
+        return{
+            ...state,
+            requesting:false,
+            successful:false,
+            messages:'',
+            errors:action.payload
+        }
+            case authActiontype.EMAIL_VERIFIED:
             return {
                 ...state,
-                emailVerify:{
-                    message:action.payload
-                }
+                requesting: false,
+                successful: true,
+                messages:action.payload,
+                errors: '',
             }
-        case authActiontype.EMAIL_VERIFICATION_FAILED:
+            case authActiontype.EMAIL_VERIFICATION_FAILED:
             return{
                 ...state,
-                emailVerify:{
-                    ...state.emailVerify,
-                    errorMsg:action.payload
-                }
+                requesting:false,
+                successful:false,
+                messages:'',
+                errors:action.payload
             }
-        case authActiontype.SIGNIN_SUCCESS:
+            case authActiontype.SIGNIN_REQUESTING:
+            return{
+                    ...state,
+                    requesting:true,
+                    successful:false,
+                    messages:'',
+                    errors:''
+                }
+            case authActiontype.SIGNIN_SUCCESS:
             return{
                 ...state,
                 isAuthenticated:true,
                 token:action.payload.newtoken,
-                signIn:{
-                    message:action.payload.message,
-                    errorMsg:''
-                }
+                requesting:false,
+                successful:true,
+                messages:action.payload.message,
+                errors:''
             }
-        case authActiontype.SIGNUP_FAILURE:
+            case authActiontype.SIGNIN_FAILURE:
             return{
                 ...state,
-                signUp:{
-                    ...state.signUp,
-                    errorMsg:action.payload
-                }
+                requesting:false,
+                successful:false,
+                messages:'',
+                errors:action.payload
             }
-        case authActiontype.SIGNIN_FAILURE:
-            return{
-                ...state,
-                signIn:{
-                    ...state.signIn,
-                    errorMsg:action.payload
+            case authActiontype.RESET_REQUEST_SUCCESS:
+                return{
+                    ...state,
+                    messages:action.payload
                 }
-            }
-        case authActiontype.SIGNOUT_SUCCESS:
+            case authActiontype.RESET_PASSWORD_SUCCESS:
+                    return{
+                        ...state,
+                        messages:action.payload
+                    }
+       
+            case authActiontype.SIGNOUT_SUCCESS:
             return {
                 ...state,
                 isAuthenticated:false,
                 token:action.payload.token,
-                signOut:{
-                    message:action.payload.message
+                requesting:false,
+                successful:true,
+                messages:action.payload.message,
+                errors:''
+            }
+            case authActiontype.CLEAR_ERROR:
+                return{
+                    ...state,
+                    requesting: false,
+                    successful: false,
+                    errors:''
                 }
-            }
-        case authActiontype.SIGNUP_MSGCLEAR:
-            return{
-                ...state,
-                signUp:{
-                    message:action.payload,
-                    errorMsg:action.payload
+            case authActiontype.CLEAR_MESSAGE:
+                return{
+                    ...state,
+                    requesting: false,
+                    successful: false,
+                    messages:''
                 }
-            }
-        case authActiontype.SIGNIN_MSGCLEAR:
-            return{
-                ...state,
-                signIn:{
-                    message:action.payload,
-                    errorMsg:action.payload
-                }
-            }
-        case authActiontype.SIGNOUT_MSGCLEAR:
-        return{
-            ...state,
-            signOut:{
-                message:action.payload
-            }
-        }
-        case authActiontype.VERIFY_MSGCLEAR:
-        return{
-            ...state,
-            emailVerify:{
-                message:action.payload,
-                errorMsg:action.payload
-            }
-        }
-        default:
+            default:
             return state;
     }
 }

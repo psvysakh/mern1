@@ -16,12 +16,10 @@ const userSchema = new Schema({
         password:{
             type:String,
         },
-        secretToken:{
-            type:String
-        },
-        isActive:{
-            type:Boolean
-        }
+        secretToken:String,
+        isActive:Boolean,
+        resetToken:String,
+        resetTokenExpiry:Date,
       
     },
     google:{

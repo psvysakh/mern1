@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import  GoogleLogin from 'react-google-login';
 import { googleOAut } from '../../redux/auth/auth.action';
+import './google.scss';
 
 const Google=({googleAuthent})=>{
 
@@ -16,7 +17,7 @@ const Google=({googleAuthent})=>{
         buttonText="Google"
         onSuccess={responseGoogle}
         onFailure={responseGoogle}
-        className="btn btn-outline-danger"
+        className="btn btn-google"
         />
     )
 }

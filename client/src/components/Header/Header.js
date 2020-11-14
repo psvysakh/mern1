@@ -1,22 +1,18 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link,withRouter} from 'react-router-dom';
-import { msgSignOutAutoClear, signOutStart } from '../../redux/auth/auth.action';
+import { signOutStart } from '../../redux/auth/auth.action';
 import CustomButton from '../customButton/customButton';
-import {toast} from 'react-toastify';
+
 
 import './Header.scss';
 
 const Header =({isAuth,signOut,clearSignOutMsg})=>{
     const signOutTrigger=()=>{
         signOut();
-        toast.success("SignOut Successfull");
-        setTimeout(()=>{
-            clearSignOutMsg();
-        },5000);
     }
     return(
-    <nav className="navbar navbar-expand-lg navbar-light">
+    <nav className="navbar navbar-expand-lg fixed-top">
         <div className="container">
             <Link className="navbar-brand" to="/">ECOM <span>STORE</span></Link>
             <Link className="dash-link" to="/dashboard">Dashboard</Link>
@@ -49,7 +45,6 @@ const mapStateToProps=state=>({
     isAuth:state.auth.isAuthenticated
 })
 const mapDispatchToProps=dispatch=>({
-    signOut:()=>dispatch(signOutStart()),
-    clearSignOutMsg:()=>dispatch(msgSignOutAutoClear())
+    signOut:()=>dispatch(signOutStart())
 })
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Header));

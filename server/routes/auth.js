@@ -19,7 +19,7 @@ const passportSignin=function(req, res, next) {
 const passportGoogle = passport.authenticate('googleToken',{session:false});
 
 
-const {validSignUp,validSignIn} = require('../helper/valid');
+const {validSignUp,validSignIn,validEmail,validPassword} = require('../helper/valid');
 
 const authController = require('../controllers/auth');
 
@@ -29,10 +29,16 @@ router.post('/activate',authController.activation);
 
 router.post('/signin',validSignIn,passportSignin,authController.signIn);
 
+router.post('/resetform',validEmail,authController.resetForm);
+
+router.post('/resetPassword',validPassword,authController.resetPassword);
+
+
+
 router.post('/oauth/google',passportGoogle,authController.googleOAuth);
 
-router.get('/signout',authController.signOut);
 
+router.get('/signout',authController.signOut);
 
 
 

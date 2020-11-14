@@ -1,28 +1,15 @@
 .signin{
+    position: relative;
     h2{font-size: 18px !important;text-align: center;
         position: relative;
-        margin: 30px 0;
+        margin:10px 0 20px 0;
         color: rgba(11, 201, 74, 0.993);
-    &::before{
-        content:'';
-        position: absolute;
-        height: 1px;
-        width: 20%;
-        background: #ccc;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
     }
-    &::after{
-        content:'';
-        position: absolute;
-        height: 1px;
-        width: 20%;
-        background: #ccc;
-        top: 50%;
-        right: 0;
-        transform: translateY(-50%);
-    }
+    
+    .forgot{
+       display: flex;
+       justify-content: flex-end;
+       margin-top: 10px;
     }
 }
 

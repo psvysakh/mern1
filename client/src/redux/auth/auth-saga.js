@@ -5,13 +5,20 @@ import authActiontype from './auth.type';
 
 import {
     signUpFailure,
-    signUpComplete,
     signInSuccess,
     signInFailure,
     signOutSuccess,
     emailVerificationSuccess,
-    emailVerificationFailed
+    emailVerificationFailed,
+    signInRequesting,
+    signUpSuccess,
+    signUpRequesting,
+    getResetFormSuccess,
+    resetPasswordSuccess
     } from './auth.action';
+
+
+ 
 
 axios.defaults.headers = {
     'Content-Type': 'application/json',
@@ -20,6 +27,35 @@ axios.defaults.headers = {
 const api = axios.create({baseURL: 'http://localhost:8001'})
 
 //apiCall triggered by (level-2)  <-- (level-3) below
+
+const resetFetch=async(data)=>{
+    console.log(data);
+    return await api.post('/auth/resetform',
+    {
+        email:data.email
+    }
+    ).then(res=>{
+        console.log(`response `,res.data);
+        return res.data;
+    }).catch(err=>{
+        return err.response.data;
+    })
+}
+const resetPassFetch=async(data)=>{
+    console.log(`password reached at saga middleware`,data);
+    return await api.post('/auth/resetPassword',
+    {
+        password:data.password,
+        token:data.token
+    }
+    ).then(res=>{
+        console.log(`response `,res.data);
+        return res.data;
+    }).catch(err=>{
+        return err.response.data;
+    })
+}
+
 
 const verifyFetch=async(data)=>{
     console.log(data);
@@ -87,24 +123,7 @@ const signInFetch=async (data)=>{
             return err.response.data;
         });
     
-                                                            //Fetch Method Below
-   /*  return await fetch('http://localhost:8001/auth/signin', {        
-        method:'POST',
-        headers:{
-            Authorization:localStorage.getItem('JWT_TOKEN'),
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            email:data.email,
-            password:data.password
-        })
-       
-       }).then(res=>{
-           return res.json();
-       })
-       .catch(error=>{
-           return error;
-       }); */
+  
 
 }
 const googleFetch=async(accessToken)=>{
@@ -118,22 +137,7 @@ const googleFetch=async(accessToken)=>{
         .catch(err => {
             return err.response.data;
         });
-   /*  return await fetch('http://localhost:8001/auth/oauth/google',{
-        method:'POST',
-        headers:{
-            Authorization:localStorage.getItem('JWT_TOKEN'),
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            access_token:accessToken
-        })
-    })
-    .then(res=>{
-        return res.json();
-    })
-    .catch(error=>{
-        return error;
-    }); */
+
 }
 
 //functions triggered by (level-1)  <-- (level-2) below
@@ -141,9 +145,12 @@ const googleFetch=async(accessToken)=>{
 export function* signUp(action){
     const {userCredentials} = action.payload;
     try{
-        const {message}=yield call(signUpFetch,userCredentials);
-        yield put(signUpComplete({message}));
-       
+        yield put(signUpRequesting());
+        const {message,error}=yield call(signUpFetch,userCredentials);
+        yield put(signUpSuccess(message));
+       if(error){
+           throw error
+       }
     }catch(error){
         yield put(signUpFailure(error));
     }
@@ -152,6 +159,7 @@ export function* signUp(action){
 export function* signIn(action){
     const {userCredentials} = action.payload;
     try{
+        yield put(signInRequesting());
         const {newtoken,message,error}=yield call(signInFetch,userCredentials);
        
         if(newtoken){
@@ -171,9 +179,9 @@ export function* signIn(action){
 export function* googleSignIn(action){
     const {token}=action.payload;
     try{
+        
         const {newtoken,error} = yield call(googleFetch,token);
         if(newtoken){
-            console.log(newtoken);
             yield localStorage.setItem('JWT_TOKEN',newtoken);
             yield put(signInSuccess({newtoken,message:"Google signin success"}));
            
@@ -187,15 +195,17 @@ export function* googleSignIn(action){
     }
 }
 export function* signOut(){
+    yield localStorage.removeItem('JWT_TOKEN');
     yield put(signOutSuccess());
 }
 export function* verify(action){
-   
+  const {history}=action.payload;
     console.log(`token ready to send to server`,action.payload);
     try{
        const {message,error}= yield call(verifyFetch,action.payload);
        if(message){
         yield put(emailVerificationSuccess(message));
+        yield history.push('/signin');
        }
         if(error){
             throw error;
@@ -204,6 +214,38 @@ export function* verify(action){
         yield put(emailVerificationFailed(error))
     }
 }
+
+export function* getResetForm(action){
+    console.log(action.payload);
+    try{
+        const {message,error}=yield call(resetFetch,action.payload);
+        if(message){
+            console.log(message);
+            yield put(getResetFormSuccess(message));
+        }
+        if(error){
+            throw error;
+        }
+    }catch(error){
+        console.log(error);
+    }
+}
+export function* resetPassword(action){
+    const {history}=action.payload;
+    try{
+        const {message,error}=yield call(resetPassFetch,action.payload);
+        if(message){
+            yield put(resetPasswordSuccess(message));
+            yield history.push('/signin');
+        }
+        if(error){
+            throw error;
+        }
+    }catch(error){
+        console.log(error);
+    }
+}
+
 
 //userActionListeners <--(level-1) below
 
@@ -227,6 +269,14 @@ export function* onVerifyToken(){
     yield takeLatest(authActiontype.VERIFY_TOKEN,
         verify)
 }
+export function* onReset(){
+    yield takeLatest(authActiontype.RESET_REQUEST_START,
+        getResetForm)
+}
+export function* onPasswordReset(){
+    yield takeLatest(authActiontype.RESET_PASSWORD,
+        resetPassword)
+}
 
 export function* authSagas(){
     yield all([
@@ -234,6 +284,8 @@ export function* authSagas(){
         call(onSignIn),
         call(onGoogleAuth),
         call(onSignOutStart),
-        call(onVerifyToken)
+        call(onVerifyToken),
+        call(onReset),
+        call(onPasswordReset)
     ])
 }

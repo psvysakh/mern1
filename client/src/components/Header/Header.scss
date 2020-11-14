@@ -1,10 +1,17 @@
 
-.navbar-brand{
-    font-weight: 500;
-    color: rgb(74, 214, 97) !important;
-    span{
-        font-weight: 400;
-        color: rgb(34, 34, 34);
+.navbar{
+    .navbar-brand{
+        font-weight: 500;
+        color: rgb(74, 214, 97) !important;
+        span{
+            font-weight: 400;
+            color: rgb(255, 255, 255);
+        }
     }
+    .dash-link{text-decoration: none !important;color: #ffffff;}
+    ul li a{
+        color: #fff !important;
+        text-decoration: none;
+    }
+    button{color: #fff !important;}
 }
-.dash-link{text-decoration: none !important;color: #3f61f5;}

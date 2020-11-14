@@ -12,17 +12,18 @@ const User = require('./models/auth');
 
 passport.use(new JwtStrategy({
     jwtFromRequest:ExtractJwt.fromHeader('authorization'),
-    secretOrKey:process.env.JWT_SECRET
-},async (payload,done)=>{
-console.log(payload);
+    secretOrKey:process.env.JWT_SECRET,
+    passReqToCallback:true
+},async (req,payload,done)=>{
+console.log(`received payload`,payload);
     try{
         //find user from token
         const user = await User.findById({_id:payload._id});
         
         //if user doesn't exist, handle
-        if(!user){return done(null,false)}
+        if(!user){return done(null,false,{message:"User not existing!"})}
         //otherwise, return user
-        return done(null,user);
+        return done(null,user,{message:"User Found"});
     }catch(error){
         return done(error,false);
     }

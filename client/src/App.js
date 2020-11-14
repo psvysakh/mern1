@@ -10,10 +10,11 @@ import Homepage from './pages/Home/HomePage';
 import SignInUpPage from './pages/SignInUp/signInUp';
 import VerifyToken from './pages/EmailVerify/EmailVerify';
 
+
 import AuthGuard from './components/hoc/authGuard';
 
 import {ToastContainer,toast} from 'react-toastify';
-import { msgSignInAutoClear, msgSignUpAutoClear,msgVerifyEmailAutoClear } from './redux/auth/auth.action';
+import { messageAutoClear } from './redux/auth/auth.action';
 
 
 
@@ -21,25 +22,19 @@ import { msgSignInAutoClear, msgSignUpAutoClear,msgVerifyEmailAutoClear } from '
 
 class App extends React.Component{
 
- 
+ componentDidMount(){
+   console.log(`App Rendering`);
+ }
   componentDidUpdate(){
-   
-
-    if(this.props.isAuth && this.props.signInMsg){
-      toast.success(this.props.signInMsg);
-      setTimeout(()=>{
-        this.props.clearSignInMsg();
-      },5000);
-    }
-    if(this.props.signUpMsg || this.props.verifyMsg){
-      toast.success(this.props.signUpMsg || this.props.verifyMsg);
-                setTimeout(()=>{
-                  this.props.clearSignUpMsg();
-                  this.props.clearVerifyMsg();
-                },5000);
-                }
-    
   
+      if(this.props.message){
+          toast.success(this.props.message);
+          setTimeout(()=>{
+            this.props.msgClear();
+          },5000);
+     
+      }
+    
   }
   
   
@@ -51,7 +46,7 @@ class App extends React.Component{
           <ToastContainer/>
           <Switch>
               <Route exact={true} path="/" component={Homepage}/>
-              <Route exact path="/signin" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
+              <Route path="/signin" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
               <Route exact path="/signup" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
               <Route exact path="/verifyToken" component={VerifyToken}/>
               <Route exact path="/dashboard" component={AuthGuard(Dashboard)}/>
@@ -65,13 +60,9 @@ class App extends React.Component{
 
 const mapStateToProps=state=>({
   isAuth:state.auth.isAuthenticated,
-  signInMsg:state.auth.signIn.message,
-  signUpMsg:state.auth.signUp.message,
-  verifyMsg:state.auth.emailVerify.message
+  message:state.auth.messages
 })
 const mapDispatchToProps=dispatch=>({
-clearSignInMsg:()=>dispatch(msgSignInAutoClear()),
-clearSignUpMsg:()=>dispatch(msgSignUpAutoClear()),
-clearVerifyMsg:()=>dispatch(msgVerifyEmailAutoClear())
+msgClear:()=>dispatch(messageAutoClear())
 });
 export default connect(mapStateToProps,mapDispatchToProps)(App);

@@ -3,11 +3,11 @@ import React, {  useState } from 'react';
 import {connect} from 'react-redux';
 import FormInput from '../formInput/formInput';
 import CustomButton from '../customButton/customButton';
-import { msgSignUpAutoClear, signUpStart } from '../../redux/auth/auth.action';
+import { errorAutoClear, signUpStart } from '../../redux/auth/auth.action';
 
 import './signup.scss';
 
-const SignUp=({signUpStart,msgAutoClear,errorMsg})=>{
+const SignUp=({signUpStart,signUpState,errorClear})=>{
 
 
     const [signUpData,setSignUpData]=useState({
@@ -31,22 +31,24 @@ const SignUp=({signUpStart,msgAutoClear,errorMsg})=>{
            ...signUpData
         })
     }
-    const formvalidationMsg=(errorMsg)=>{
+    
+    let element;
+    if(signUpState.errors){
         setTimeout(()=>{
-            msgAutoClear();
+            errorClear();
         },5000);
-        return(
-            <div className="alert alert-danger" role="alert">
-                {errorMsg}
-              </div>
-        )
-        
-    } 
+    element=(
+        <div className="alert alert-danger" role="alert">{signUpState.errors}</div>
+    )
+    }else{
+        element='';
+    }
+  
     return(
         <div className="signup">
             <h2>Don't have an account ?</h2>
             <p>SignUp with email and password</p>
-            {errorMsg ? formvalidationMsg(errorMsg) :''}
+            {element}
             <form className='sign-up-form' onSubmit={handleSubmit}>
                 <FormInput 
                 name="name"
@@ -81,10 +83,10 @@ const SignUp=({signUpStart,msgAutoClear,errorMsg})=>{
     )
 }
 const mapStateToProps=state=>({
-    errorMsg:state.auth.signUp.errorMsg
-})
+signUpState:state.auth
+});
 const mapDispatchToProps=dispatch=>({
     signUpStart:(data)=>dispatch(signUpStart(data)),
-    msgAutoClear:()=>dispatch(msgSignUpAutoClear())
+    errorClear:()=>dispatch(errorAutoClear())
 })
 export default connect(mapStateToProps,mapDispatchToProps)(SignUp);

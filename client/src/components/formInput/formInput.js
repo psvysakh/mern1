@@ -1,4 +1,5 @@
 import React from 'react';
+import './formInput.scss';
 const FormInput=({handleChange,label, ...otherProps})=>{
     return(
         <div className="form-group">

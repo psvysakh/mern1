@@ -5,13 +5,13 @@ import {connect} from 'react-redux';
 
 import FormInput from '../../components/formInput/formInput';
 import CustomButton from '../../components/customButton/customButton';
-import { verifyToken,msgVerifyEmailAutoClear } from '../../redux/auth/auth.action';
+import { verifyToken } from '../../redux/auth/auth.action';
 
 
 
 
-const EmailVerify=({verifyToken,msgAutoClear,errorMsg})=>{
-    
+const EmailVerify=({verifyToken,history})=>{
+   
     const [tokenValue,setTokenValue]=useState({
        token:''
     });
@@ -24,20 +24,10 @@ const EmailVerify=({verifyToken,msgAutoClear,errorMsg})=>{
     }
     const handleSubmit=async (e)=>{
         e.preventDefault();
-        verifyToken({...tokenValue});
+        verifyToken({token,history});
         setTokenValue({...tokenValue});
     }
-    const formvalidationMsg=(errorMsg)=>{
-        setTimeout(()=>{
-            msgAutoClear();
-        },5000);
-        return(
-            <div className="alert alert-danger" role="alert">
-                {errorMsg}
-              </div>
-        )
-        
-    } 
+  
    
    
 return(
@@ -46,7 +36,6 @@ return(
             <div className="row">
                 <div className="col-lg-6 offset-md-3">
                     <h2>Email Verification</h2>
-                    {errorMsg ? formvalidationMsg(errorMsg):''}
                     <form onSubmit={handleSubmit}>
                         <FormInput 
                         name="token"
@@ -66,11 +55,8 @@ return(
     </section>
 )
 }
-const mapStateToProps=state=>({
-errorMsg:state.auth.emailVerify.errorMsg
-});
+
 const maspDispatchToProps=dispatch=>({
-    verifyToken:(data)=>dispatch(verifyToken(data)),
-    msgAutoClear:()=>dispatch(msgVerifyEmailAutoClear())
+    verifyToken:(data)=>dispatch(verifyToken(data))
 });
-export default connect(mapStateToProps,maspDispatchToProps)(EmailVerify);
+export default connect(null,maspDispatchToProps)(EmailVerify);
