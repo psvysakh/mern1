@@ -8,6 +8,7 @@ require('../passport');
 const {validationResult} = require('express-validator');
 const bcrypt = require('bcrypt');
 
+
 //JWT token generator
 
 signToken=user=>{
@@ -60,7 +61,7 @@ exports.signUp = async (req,res,next)=>{
                          <p>${token}</p>
                          <hr />
                          <p>This email may containe sensetive information</p>
-                         <a href="${process.env.CLIENT_URL}/verifyToken">${process.env.CLIENT_URL}/verifyToken</a>
+                         <a href="${process.env.CLIENT_URL}/signup/verifyToken">${process.env.CLIENT_URL}/signup/verifyToken</a>
                      `
              };
             await user.save();
@@ -70,7 +71,7 @@ exports.signUp = async (req,res,next)=>{
                      message: `Please check the mail and verify!`
                    });
                }).catch(err=>{
-                  console.log(err);
+                  console.log(`sendgriderrors`,err.response.body);
                });
          }catch(error){
             console.log(error);

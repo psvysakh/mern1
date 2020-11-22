@@ -1,22 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-require('../passport');
-const passportSignin=function(req, res, next) {
-    passport.authenticate('local', function(err, user, info) {
-        if (err) { 
-            console.log(`Internal Error`,err);
-            return next(err); }
-        if (!user) { 
-            console.log(`User Status`,user,info.message);
-            return res.status(400).json({error:info.message});}
-       req.user=user;
-       req.message=info.message;
-       next();
-      })(req, res, next);
-    }
-
-const passportGoogle = passport.authenticate('googleToken',{session:false});
+const {passportSignin,passportGoogle}=require('../helper/passportStrategy');
 
 
 const {validSignUp,validSignIn,validEmail,validPassword} = require('../helper/valid');

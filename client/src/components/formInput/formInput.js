@@ -1,15 +1,18 @@
 import React from 'react';
+
 import './formInput.scss';
-const FormInput=({handleChange,label, ...otherProps})=>{
+
+const FormInput=({label,field,name,form:{touched,errors}, ...otherProps})=>{
+ 
     return(
         <div className="form-group">
-            
             <input 
             className="form-control"
-            {...otherProps}
             placeholder={label}
-            onChange={handleChange}
+            {...field}
+            {...otherProps}
             />
+            {touched[field.name] && errors[field.name]? <div className="error">{errors[field.name]}</div> : null}
         </div>
         
     )

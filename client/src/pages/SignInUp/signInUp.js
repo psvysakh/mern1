@@ -5,6 +5,7 @@ import SignUp from '../../components/signUp/signUp';
 import SignIn from '../../components/signIn/signIn';
 import GetResetForm from '../../components/reset/reset';
 import PasswordReset from '../../components/reset/passwordReset';
+import VerifyToken from '../../components/EmailVerify/EmailVerify';
 
 import Google from '../../components/google/google';
 
@@ -31,7 +32,7 @@ const SignInUpPage =({history})=>{
                             label="goback"
                             type="button"
                             onClick={history.goBack}
-                            >C</CustomButton>
+                            >{'\<'}</CustomButton>
                             <div className=" thirdParty">
                                 <h2>Signin with</h2>
                                 <Google/>
@@ -40,6 +41,7 @@ const SignInUpPage =({history})=>{
                             <Route exact path="/signup" render={()=><SignUp/>}/>
                             <Route exact path="/signin/reset" render={()=><GetResetForm/>}/>
                             <Route exact path="/signin/reset/:token" render={()=><PasswordReset/>}/>
+                            <Route exact path="/signup/verifyToken" render={()=><VerifyToken/>}/>
                         </div>
                     </div>
                    <div className="col-lg-8">

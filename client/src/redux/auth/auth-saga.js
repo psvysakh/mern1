@@ -14,11 +14,12 @@ import {
     signUpSuccess,
     signUpRequesting,
     getResetFormSuccess,
-    resetPasswordSuccess
+    resetPasswordSuccess,
+    getResetRequesting
     } from './auth.action';
 
 
- 
+/*  console.log(process.env.ECOM_BACKEND_API); */
 
 axios.defaults.headers = {
     'Content-Type': 'application/json',
@@ -143,10 +144,9 @@ const googleFetch=async(accessToken)=>{
 //functions triggered by (level-1)  <-- (level-2) below
 
 export function* signUp(action){
-    const {userCredentials} = action.payload;
     try{
         yield put(signUpRequesting());
-        const {message,error}=yield call(signUpFetch,userCredentials);
+        const {message,error}=yield call(signUpFetch,action.payload);
         yield put(signUpSuccess(message));
        if(error){
            throw error
@@ -157,10 +157,9 @@ export function* signUp(action){
 }
 
 export function* signIn(action){
-    const {userCredentials} = action.payload;
     try{
         yield put(signInRequesting());
-        const {newtoken,message,error}=yield call(signInFetch,userCredentials);
+        const {newtoken,message,error}=yield call(signInFetch,action.payload);
        
         if(newtoken){
             yield localStorage.setItem('JWT_TOKEN',newtoken);
@@ -199,7 +198,9 @@ export function* signOut(){
     yield put(signOutSuccess());
 }
 export function* verify(action){
+    
   const {history}=action.payload;
+  console.log(`token reached saga`,history);
     console.log(`token ready to send to server`,action.payload);
     try{
        const {message,error}= yield call(verifyFetch,action.payload);
@@ -216,8 +217,8 @@ export function* verify(action){
 }
 
 export function* getResetForm(action){
-    console.log(action.payload);
     try{
+        yield put(getResetRequesting());
         const {message,error}=yield call(resetFetch,action.payload);
         if(message){
             console.log(message);
@@ -233,6 +234,7 @@ export function* getResetForm(action){
 export function* resetPassword(action){
     const {history}=action.payload;
     try{
+        yield put(getResetRequesting());
         const {message,error}=yield call(resetPassFetch,action.payload);
         if(message){
             yield put(resetPasswordSuccess(message));

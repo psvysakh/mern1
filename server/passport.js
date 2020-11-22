@@ -3,7 +3,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const {ExtractJwt} = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-token').Strategy;
-const bcrypt = require('bcrypt');
+
 
 const User = require('./models/auth');
 
@@ -35,8 +35,9 @@ console.log(`received payload`,payload);
 
 passport.use('googleToken',new GoogleStrategy({
     clientID:'580298208669-lbhqf67ulguuhi0siq9ad9dmis4370g3.apps.googleusercontent.com',
-    clientSecret:'4xG6C8IUXdX4ZuYCQp5lrCb3'
-},async(accessToken,refreshToken,profile,done)=>{
+    clientSecret:'4xG6C8IUXdX4ZuYCQp5lrCb3',
+    passReqToCallback:true
+},async(req,accessToken,refreshToken,profile,done)=>{
 try{
 
  const existing = await User.findOne({"google.id":profile.id});
@@ -44,7 +45,7 @@ try{
  
  if(existing){
     console.log(`user already existing in Database`); 
-    return done(null,existing)}
+    return done(null,existing,{message:"User existing"})}
 
     console.log(`user not existing ,we are creating new one`); 
  const newUser = new User({
@@ -55,7 +56,7 @@ try{
      }
  });
  await newUser.save();
- return done(null,newUser);
+ return done(null,newUser,{message:"New user"});
 }catch(error){
     return done(error,false);
 }

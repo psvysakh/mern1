@@ -12,7 +12,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const userRoutes =require('./routes/user');
-
+const categoryRoutes =require('./routes/category');
+const productRoutes = require('./routes/product');
 // app
 
 const app=express();
@@ -59,6 +60,8 @@ app.use(cookieParser());
 
 app.use('/auth',authRoutes);
 app.use('/user',userRoutes);
+app.use('/category',categoryRoutes);
+app.use('/product',productRoutes);
 
 
 module.exports=app;

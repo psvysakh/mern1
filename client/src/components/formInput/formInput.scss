@@ -1,6 +1,12 @@
-.form-control{
-    background: #e3e2ea;
-    height: 45px;
-    border-radius: 50px;
-    border: none;
+.form-group{
+    .form-control{
+        background: #e3e2ea;
+        height: 45px;
+        border-radius: 50px;
+        border: none;
+    }
+    .error{
+        color: rgb(240, 33, 33);
+    }
 }
+

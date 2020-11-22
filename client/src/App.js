@@ -8,7 +8,6 @@ import Dashboard from './components/Dashboard/dashBoard';
 //Page Components
 import Homepage from './pages/Home/HomePage';
 import SignInUpPage from './pages/SignInUp/signInUp';
-import VerifyToken from './pages/EmailVerify/EmailVerify';
 
 
 import AuthGuard from './components/hoc/authGuard';
@@ -23,7 +22,7 @@ import { messageAutoClear } from './redux/auth/auth.action';
 class App extends React.Component{
 
  componentDidMount(){
-   console.log(`App Rendering`);
+   console.log(`App Rerendering`);
  }
   componentDidUpdate(){
   
@@ -47,9 +46,8 @@ class App extends React.Component{
           <Switch>
               <Route exact={true} path="/" component={Homepage}/>
               <Route path="/signin" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
-              <Route exact path="/signup" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
-              <Route exact path="/verifyToken" component={VerifyToken}/>
-              <Route exact path="/dashboard" component={AuthGuard(Dashboard)}/>
+              <Route path="/signup" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
+               <Route exact path="/dashboard" component={AuthGuard(Dashboard)}/>
           </Switch>
       </div>
     )

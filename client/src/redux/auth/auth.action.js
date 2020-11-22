@@ -48,6 +48,9 @@ export const getResetForm=(data)=>({
     type:authActiontype.RESET_REQUEST_START,
     payload:data
 });
+export const getResetRequesting=()=>({
+    type:authActiontype.RESET_REQUESTING
+});
 export const getResetFormSuccess=(data)=>({
     type:authActiontype.RESET_REQUEST_SUCCESS,
     payload:data

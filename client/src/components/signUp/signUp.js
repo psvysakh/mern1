@@ -1,16 +1,21 @@
 import React, {  useState } from 'react';
+import { Formik , Form , Field , ErrorMessage} from 'formik';
+import * as Yup from 'yup';
 
 import {connect} from 'react-redux';
 import FormInput from '../formInput/formInput';
 import CustomButton from '../customButton/customButton';
+import Loader from '../loader/loader';
 import { errorAutoClear, signUpStart } from '../../redux/auth/auth.action';
+
+
 
 import './signup.scss';
 
-const SignUp=({signUpStart,signUpState,errorClear})=>{
+const SignUp=({signUpStart,loading,error,errorClear})=>{
 
 
-    const [signUpData,setSignUpData]=useState({
+    /* const [signUpData,setSignUpData]=useState({
         name:'',
         email:'',
         password:''
@@ -30,60 +35,84 @@ const SignUp=({signUpStart,signUpState,errorClear})=>{
         setSignUpData({
            ...signUpData
         })
+    } */
+    const initialValues={
+        name:'',
+        email:'',
+        password:''
     }
-    
-    let element;
-    if(signUpState.errors){
-        setTimeout(()=>{
-            errorClear();
-        },5000);
-    element=(
-        <div className="alert alert-danger" role="alert">{signUpState.errors}</div>
-    )
-    }else{
-        element='';
+    const onSubmit=values=>{
+        signUpStart(values);
+    }
+
+    const validationSchema=Yup.object({
+        name:Yup.string()
+        .required('Name is required'),
+        email:Yup.string()
+        .required('Email is required')
+        .email('Invalid Email'),
+        password:Yup.string()
+        .required('Password is required')
+        .min(5,'Minimum 5 Characters needed')
+        .matches(/\d/,"One digit is needed")
+
+    });
+    const showError=()=>{
+        if(error){
+            setTimeout(()=>{
+                errorClear();
+            },5000);
+        }
+       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
     }
   
     return(
         <div className="signup">
             <h2>Don't have an account ?</h2>
             <p>SignUp with email and password</p>
-            {element}
-            <form className='sign-up-form' onSubmit={handleSubmit}>
-                <FormInput 
-                name="name"
-                type="text"
-                label="Name"
-                value={name}
-                required
-                handleChange={handleChange}/>
-                <FormInput 
-                name="email"
-                type="email"
-                label="Email"
-                value={email}
-                required
-                handleChange={handleChange}/>
-                <FormInput 
-                name="password"
-                type="password"
-                label="Password"
-                value={password}
-                required
-                handleChange={handleChange}/>
-            
-                <CustomButton 
-                label="signup"
-                type="submit"
-                value="submit" >SIGN UP</CustomButton>
-                
-            </form>
+            {showError()}
+            <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
+            >
+                <Form>
+                        
+                    <Field 
+                    name="name" 
+                    type="text" 
+                    label="Name"
+                    component={FormInput}/>
+                       
+                    <Field 
+                    name="email" 
+                    type="email" 
+                    label="Email" 
+                    component={FormInput}/>
+                       
+                        
+                    <Field 
+                     name="password" 
+                     type="password" 
+                     label="Password" 
+                     component={FormInput}/>
+                        
+                    <CustomButton 
+                    label="signup"
+                    type="submit"
+                    value="submit" >
+                         {loading ? <Loader/> : 'SIGN UP'}
+                    </CustomButton>
+
+                </Form>
+            </Formik>
           
         </div>
     )
 }
 const mapStateToProps=state=>({
-signUpState:state.auth
+error:state.auth.errors,
+loading:state.auth.requesting
 });
 const mapDispatchToProps=dispatch=>({
     signUpStart:(data)=>dispatch(signUpStart(data)),
