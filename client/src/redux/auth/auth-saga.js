@@ -1,7 +1,7 @@
 import {takeLatest,put,all,call} from 'redux-saga/effects';
 import axios from 'axios';
 import authActiontype from './auth.type';
-
+/* import api from '../../helper/api'; */
 
 import {
     signUpFailure,
@@ -15,23 +15,22 @@ import {
     signUpRequesting,
     getResetFormSuccess,
     resetPasswordSuccess,
-    getResetRequesting
+    getResetRequesting,
     } from './auth.action';
 
 
-/*  console.log(process.env.ECOM_BACKEND_API); */
 
-axios.defaults.headers = {
-    'Content-Type': 'application/json',
-    Authorization: localStorage.getItem('JWT_TOKEN')
+
+const deleteHeader=()=>{
+    axios.defaults.headers.common['Authorization'] = '';
 }
-const api = axios.create({baseURL: 'http://localhost:8001'})
+
 
 //apiCall triggered by (level-2)  <-- (level-3) below
 
 const resetFetch=async(data)=>{
     console.log(data);
-    return await api.post('/auth/resetform',
+    return await axios.post('/auth/resetform',
     {
         email:data.email
     }
@@ -44,7 +43,7 @@ const resetFetch=async(data)=>{
 }
 const resetPassFetch=async(data)=>{
     console.log(`password reached at saga middleware`,data);
-    return await api.post('/auth/resetPassword',
+    return await axios.post('/auth/resetPassword',
     {
         password:data.password,
         token:data.token
@@ -60,7 +59,7 @@ const resetPassFetch=async(data)=>{
 
 const verifyFetch=async(data)=>{
     console.log(data);
-    return await api.post('/auth/activate',
+    return await axios.post('/auth/activate',
     {
         token:data.token
     }
@@ -74,7 +73,7 @@ const verifyFetch=async(data)=>{
 }
 
 const signUpFetch=async (data)=>{
-        return await api.post('/auth/signup',
+        return await axios.post('/auth/signup',
            {
                 name:data.name,
                 email:data.email,
@@ -110,7 +109,7 @@ const signUpFetch=async (data)=>{
 }
 const signInFetch=async (data)=>{
                                             //axios Method Below
-    return await api.post('/auth/signin',
+    return await axios.post('/auth/signin',
         {
             email:data.email,
             password:data.password
@@ -128,7 +127,7 @@ const signInFetch=async (data)=>{
 
 }
 const googleFetch=async(accessToken)=>{
-        return await api.post('/auth/oauth/google',{
+        return await axios.post('/auth/oauth/google',{
             access_token:accessToken
         })
         .then(res => {
@@ -159,11 +158,10 @@ export function* signUp(action){
 export function* signIn(action){
     try{
         yield put(signInRequesting());
-        const {newtoken,message,error}=yield call(signInFetch,action.payload);
-       
+        const {newtoken,role,error}=yield call(signInFetch,action.payload);
         if(newtoken){
             yield localStorage.setItem('JWT_TOKEN',newtoken);
-            yield put(signInSuccess({newtoken,message}));
+            yield put(signInSuccess({newtoken,role}));
         }
         if(error){
             console.log(error);
@@ -179,10 +177,10 @@ export function* googleSignIn(action){
     const {token}=action.payload;
     try{
         
-        const {newtoken,error} = yield call(googleFetch,token);
+        const {newtoken,role,error} = yield call(googleFetch,token);
         if(newtoken){
             yield localStorage.setItem('JWT_TOKEN',newtoken);
-            yield put(signInSuccess({newtoken,message:"Google signin success"}));
+            yield put(signInSuccess({newtoken,role}));
            
         }
         else{
@@ -195,6 +193,7 @@ export function* googleSignIn(action){
 }
 export function* signOut(){
     yield localStorage.removeItem('JWT_TOKEN');
+    yield deleteHeader();
     yield put(signOutSuccess());
 }
 export function* verify(action){
@@ -249,6 +248,7 @@ export function* resetPassword(action){
 }
 
 
+
 //userActionListeners <--(level-1) below
 
 export function* onSignUp(){
@@ -280,6 +280,7 @@ export function* onPasswordReset(){
         resetPassword)
 }
 
+
 export function* authSagas(){
     yield all([
         call(onSignUp),
@@ -288,6 +289,6 @@ export function* authSagas(){
         call(onSignOutStart),
         call(onVerifyToken),
         call(onReset),
-        call(onPasswordReset)
+        call(onPasswordReset),
     ])
 }

@@ -1,13 +1,13 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Link,withRouter} from 'react-router-dom';
+import {Link,withRouter,Redirect} from 'react-router-dom';
 import { signOutStart } from '../../redux/auth/auth.action';
 import CustomButton from '../customButton/customButton';
 
 
 import './Header.scss';
 
-const Header =({isAuth,signOut,clearSignOutMsg})=>{
+const Header =({isAuth,signOut,role})=>{
     const signOutTrigger=()=>{
         signOut();
     }
@@ -15,7 +15,13 @@ const Header =({isAuth,signOut,clearSignOutMsg})=>{
     <nav className="navbar navbar-expand-lg fixed-top">
         <div className="container">
             <Link className="navbar-brand" to="/">ECOM <span>STORE</span></Link>
-            <Link className="dash-link" to="/dashboard">Dashboard</Link>
+            {
+                isAuth ? role===1 ? <Link className="dash-link" to="/adminDashboard">Dashboard</Link> : <Link className="dash-link" to="/userDashboard">Dashboard</Link>
+                : ''
+                  
+            }
+         
+            
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
             </button>
@@ -42,7 +48,8 @@ const Header =({isAuth,signOut,clearSignOutMsg})=>{
     )
 }
 const mapStateToProps=state=>({
-    isAuth:state.auth.isAuthenticated
+    isAuth:state.auth.isAuthenticated,
+    role:state.user.secret.role
 })
 const mapDispatchToProps=dispatch=>({
     signOut:()=>dispatch(signOutStart())

@@ -25,7 +25,10 @@ const authActiontype={
     SIGNOUT_START:"SIGNOUT_START",
     SIGNOUT_SUCCESS:"SIGNOUT_SUCCESS",
   
-    VERIFY_TOKEN:"VERIFY_TOKEN"
+    VERIFY_TOKEN:"VERIFY_TOKEN",
+
+    LOG_OUT_START:"LOG_OUT_START",
+    LOG_OUT:"LOG_OUT"
 }
 
 export default authActiontype;

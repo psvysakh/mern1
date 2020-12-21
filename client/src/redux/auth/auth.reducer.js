@@ -4,6 +4,7 @@ import authActiontype from './auth.type';
 const INITIAL_STATE={
     isAuthenticated:false,
     token:'',
+    role:'',
     requesting: false,
     successful: false,
     messages:'',
@@ -40,9 +41,10 @@ const authReducer=(state=INITIAL_STATE,action)=>{
             ...state,
             isAuthenticated:true,
             token:action.payload.newtoken,
+            role:action.payload.role,
             requesting:false,
             successful:true,
-            messages:action.payload.message,
+            messages:'',
             errors:''
         }
         case authActiontype.SIGNUP_SUCCESS:
@@ -56,16 +58,7 @@ const authReducer=(state=INITIAL_STATE,action)=>{
                 messages:action.payload,
                 errors:''
             }
-        case authActiontype.SIGNOUT_SUCCESS:
-        return {
-            ...state,
-            isAuthenticated:false,
-            token:action.payload.token,
-            requesting:false,
-            successful:true,
-            messages:action.payload.message,
-            errors:''
-        }
+       
         case authActiontype.CLEAR_ERROR:
         case authActiontype.CLEAR_MESSAGE:
             return{
@@ -75,6 +68,7 @@ const authReducer=(state=INITIAL_STATE,action)=>{
                 errors:'',
                 messages:''
             }
+      
         default:
         return state;
     }

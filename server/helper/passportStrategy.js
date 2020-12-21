@@ -9,9 +9,9 @@ module.exports.passportJwt=function(req, res, next) {
             console.log(`Internal Error`,err);
             return next(err); }
         if (!user) { 
-            console.log(`User Status`,user,info.message);
+            /* console.log(`User Status`,user,info.message); */
             return res.status(400).json({error:info.message});}
-            console.log(`User Status`,user,info.message);
+            /* console.log(`User Status`,user,info.message); */
        req.user=user;
        req.message=info.message;
        next();
@@ -24,7 +24,7 @@ module.exports.passportSignin=function(req, res, next) {
             console.log(`Internal Error`,err);
             return next(err); }
         if (!user) { 
-            console.log(`User Status`,user,info.message);
+            /* console.log(`User Status`,user,info.message); */
             return res.status(400).json({error:info.message});}
        req.user=user;
        req.message=info.message;
@@ -37,7 +37,7 @@ module.exports.passportGoogle =function(req, res, next) {
             console.log(`Internal Error`,err);
             return next(err); }
         if (!user) { 
-            console.log(`User Status`,user,info.message);
+            /* console.log(`User Status`,user,info.message); */
             return res.status(400).json({error:info.message});}
        req.user=user;
        req.message=info.message;

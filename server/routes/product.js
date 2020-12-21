@@ -14,6 +14,10 @@ router.get('/related/:productId',productController.listRelated);
 
 router.get('/:productId',passportJwt,productController.read);
 
+router.get('/photo/:productId',productController.photo);
+
+router.post('/bysearch',productController.listBySearch);
+
 router.post('/create',passportJwt,isAdmin,productController.create);
 
 router.delete('/:productId',passportJwt,isAdmin,productController.remove);

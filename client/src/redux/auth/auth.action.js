@@ -34,9 +34,9 @@ export const signInStart=(data)=>({
 export const signInRequesting=()=>({
     type:authActiontype.SIGNIN_REQUESTING
 });
-export const signInSuccess=({newtoken,message})=>({
+export const signInSuccess=({newtoken,role})=>({
     type:authActiontype.SIGNIN_SUCCESS,
-    payload:{newtoken,message}
+    payload:{newtoken,role}
 });
 export const signInFailure=(error)=>({
     type:authActiontype.SIGNIN_FAILURE,
@@ -73,16 +73,14 @@ payload:data
 
 
 
+
+
 export const signOutStart=()=>({
     type:authActiontype.SIGNOUT_START
     
 })
 export const signOutSuccess=()=>({
-    type:authActiontype.SIGNOUT_SUCCESS,
-    payload:{
-        token:'',
-        message:"SignOut Successful"
-    }
+    type:authActiontype.SIGNOUT_SUCCESS
 })
 
 

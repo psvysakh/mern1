@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import { Formik , Form , Field , ErrorMessage} from 'formik';
+import { Formik , Form , Field} from 'formik';
 import * as Yup from 'yup';
 import FormInput from '../../components/formInput/formInput';
 import CustomButton from '../../components/customButton/customButton';
 import Loader from '../loader/loader';
+import ErrorMessage from '../errorMessage/errorMessage';
+import Layout from '../Layout/layout';
 import { errorAutoClear,resetPassword } from '../../redux/auth/auth.action';
 
 
@@ -36,19 +38,13 @@ const PasswordReset=({resetPass,match,history,loading,error,errorClear})=>{
         .matches(/\d/,"One digit is needed")
 
     }); 
-    const showError=()=>{
-        if(error){
-            setTimeout(()=>{
-                errorClear();
-            },5000);
-        }
-       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
-    }
+  
     return(
-        <div className="passreset">
+        <Layout>
+            <div className="passreset">
         <h2>Changing Password</h2>
         <p>Enter your new Password</p>
-        {showError()}
+        <ErrorMessage error={error} errorClear={errorClear}/>
         <Formik 
                 initialValues={initialValues}
                 validationSchema={validationSchema}
@@ -71,6 +67,7 @@ const PasswordReset=({resetPass,match,history,loading,error,errorClear})=>{
             </Formik>
                      
         </div>
+        </Layout>
            
     )
 }

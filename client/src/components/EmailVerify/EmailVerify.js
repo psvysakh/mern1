@@ -2,12 +2,15 @@
 import React, { useState } from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
-import { Formik , Form , Field , ErrorMessage} from 'formik';
+import { Formik , Form , Field} from 'formik';
 import * as Yup from 'yup';
 
-/* import FormInput from '../formInput/formInput'; */
+import FormInput from '../formInput/formInput';
+
 import CustomButton from '../customButton/customButton';
 import Loader from '../loader/loader';
+import ErrorMessage from '../errorMessage/errorMessage';
+import Layout from '../Layout/layout';
 import { errorAutoClear,verifyToken } from '../../redux/auth/auth.action';
 
 import './emailVerify.scss';
@@ -43,22 +46,16 @@ const validationSchema=Yup.object({
     
 });
 
-const showError=()=>{
-    if(error){
-        setTimeout(()=>{
-            errorClear();
-        },5000);
-    }
-   return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
-};
+
    
    
 return(
-        <div className="verify">
+       <Layout>
+            <div className="verify">
                     <h2>Verify Email</h2>
                     <p>Enter your token</p>
                   
-                    {showError()} 
+                    <ErrorMessage error={error} errorClear={errorClear}/>
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
@@ -68,7 +65,8 @@ return(
                                  <Field 
                                   name="token" 
                                   type="token" 
-                                  label="token"/>
+                                  label="token"
+                                  component={FormInput}/>
                                     
                                 <CustomButton 
                                 label="signin"
@@ -81,6 +79,7 @@ return(
                         </Formik>
                    
         </div>
+       </Layout>
 
 )
 }

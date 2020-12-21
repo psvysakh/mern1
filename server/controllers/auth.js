@@ -122,7 +122,7 @@ exports.signIn= async (req,res,next)=>{
 
    try{
       const newtoken =  signToken(req.user);
-      res.status(200).json({newtoken,message:req.message});
+      res.status(200).json({newtoken,role:req.user.role});
    }catch(error){
       console.log(error);
       next(error);
@@ -227,7 +227,7 @@ exports.googleOAuth = async(req,res,next)=>{
    console.log(`user obtained`, req.user);
    try{
       const newtoken =  signToken(req.user);
-      res.status(200).json({newtoken});
+      res.status(200).json({newtoken,role:req.user.role});
    }catch(error){
       console.log(error);
       next(error);

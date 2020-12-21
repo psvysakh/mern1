@@ -1,18 +1,22 @@
 import React, {  useState } from 'react';
-import { Formik , Form , Field , ErrorMessage} from 'formik';
+import { Redirect } from 'react-router-dom';
+import { Formik , Form , Field } from 'formik';
 import * as Yup from 'yup';
 
 import {connect} from 'react-redux';
 import FormInput from '../formInput/formInput';
 import CustomButton from '../customButton/customButton';
 import Loader from '../loader/loader';
+import ErrorMessage from '../errorMessage/errorMessage';
 import { errorAutoClear, signUpStart } from '../../redux/auth/auth.action';
 
+import Layout from '../Layout/layout';
 
 
 import './signup.scss';
 
-const SignUp=({signUpStart,loading,error,errorClear})=>{
+const SignUp=({signUpStart,loading,error,errorClear,isAuth,
+    role})=>{
 
 
     /* const [signUpData,setSignUpData]=useState({
@@ -36,6 +40,16 @@ const SignUp=({signUpStart,loading,error,errorClear})=>{
            ...signUpData
         })
     } */
+
+    const redirectUser=()=>{
+        if(isAuth){
+            if(role===1){
+                return <Redirect to="/adminDashboard"/>
+            }else{
+               return <Redirect to="/userDashboard" />
+            }
+        }
+    }
     const initialValues={
         name:'',
         email:'',
@@ -57,20 +71,14 @@ const SignUp=({signUpStart,loading,error,errorClear})=>{
         .matches(/\d/,"One digit is needed")
 
     });
-    const showError=()=>{
-        if(error){
-            setTimeout(()=>{
-                errorClear();
-            },5000);
-        }
-       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
-    }
+  
   
     return(
-        <div className="signup">
+       <Layout>
+           <div className="signup">
             <h2>Don't have an account ?</h2>
             <p>SignUp with email and password</p>
-            {showError()}
+            <ErrorMessage error={error} errorClear={errorClear}/>
             <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -106,13 +114,16 @@ const SignUp=({signUpStart,loading,error,errorClear})=>{
 
                 </Form>
             </Formik>
-          
+            {redirectUser()}
         </div>
+       </Layout>
     )
 }
 const mapStateToProps=state=>({
 error:state.auth.errors,
-loading:state.auth.requesting
+loading:state.auth.requesting,
+isAuth:state.auth.isAuthenticated,
+role:state.auth.role
 });
 const mapDispatchToProps=dispatch=>({
     signUpStart:(data)=>dispatch(signUpStart(data)),

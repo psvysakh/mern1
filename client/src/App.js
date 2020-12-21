@@ -1,66 +1,63 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {connect} from 'react-redux';
 import {Switch,Route,Redirect} from 'react-router-dom';
-
+import axios from 'axios';
 //Components
 import Header from './components/Header/Header';
-import Dashboard from './components/Dashboard/dashBoard';
+import SignUp from './components/signUp/signUp';
+import SignIn from './components/signIn/signIn';
+import GetResetForm from './components/reset/reset';
+import PasswordReset from './components/reset/passwordReset';
+import VerifyToken from './components/EmailVerify/EmailVerify';
+import adminDashboard from './pages/Dashboard/adminDashboard';
+import userDashboard from './pages/Dashboard/userDashboard';
 //Page Components
 import Homepage from './pages/Home/HomePage';
-import SignInUpPage from './pages/SignInUp/signInUp';
 
+import Page404 from './components/404/404';
 
-import AuthGuard from './components/hoc/authGuard';
+//Auth Guard Coomponents
+import PrivateRoute from './components/hoc/privateRoute';
+import AdminRoute from './components/hoc/adminRoute';
 
 import {ToastContainer,toast} from 'react-toastify';
-import { messageAutoClear } from './redux/auth/auth.action';
 
 
+axios.defaults.baseURL = 'http://localhost:8001';
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
+const App=({isAuth,jwtToken})=>{
 
-class App extends React.Component{
-
- componentDidMount(){
-   console.log(`App Rerendering`);
- }
-  componentDidUpdate(){
-  
-      if(this.props.message){
-          toast.success(this.props.message);
-          setTimeout(()=>{
-            this.props.msgClear();
-          },5000);
-     
+    useEffect(()=>{
+      if(jwtToken){
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('JWT_TOKEN');
       }
-    
-  }
-  
-  
-  render(){
-    console.log(`Authen----`,this.props.isAuth)
+    },[jwtToken]);
+
     return(
       <div>
           <Header/>
           <ToastContainer/>
           <Switch>
               <Route exact={true} path="/" component={Homepage}/>
-              <Route path="/signin" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
-              <Route path="/signup" render={()=>this.props.isAuth ? (<Redirect to="/dashboard"/>): <SignInUpPage/> } />
-               <Route exact path="/dashboard" component={AuthGuard(Dashboard)}/>
+              <Route exact path="/signin" component={SignIn} />
+              <Route exact path="/signup" component={SignUp}/>
+              <Route  path="/signin/reset" component={GetResetForm}/>
+              <Route  path="/signin/reset/:token" component={PasswordReset} />
+              <Route  path="/signup/verifyToken" component={VerifyToken} />
+              <PrivateRoute exact path="/userDashboard" component={userDashboard}/>   
+              <AdminRoute exact path="/adminDashboard" component={adminDashboard}/>
+             <Route path='*' exact={true} component={Page404} />
           </Switch>
       </div>
     )
-  }
   
 }
 
 
 const mapStateToProps=state=>({
   isAuth:state.auth.isAuthenticated,
-  message:state.auth.messages
+  jwtToken:state.auth.token,
 })
-const mapDispatchToProps=dispatch=>({
-msgClear:()=>dispatch(messageAutoClear())
-});
-export default connect(mapStateToProps,mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

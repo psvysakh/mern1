@@ -1,19 +1,31 @@
 
-import React, { useState } from 'react';
-import {Link,withRouter} from 'react-router-dom';
+import React, { useState,useEffect } from 'react';
+import {Link,Redirect,withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import { Formik , Form , Field , ErrorMessage} from 'formik';
+import { Formik , Form , Field} from 'formik';
 import * as Yup from 'yup';
 
 import FormInput from '../formInput/formInput';
 import CustomButton from '../customButton/customButton';
 import Loader from '../loader/loader';
-import {signInStart,errorAutoClear } from '../../redux/auth/auth.action';
+import ErrorMessage from '../errorMessage/errorMessage';
+import {signInStart,errorAutoClear,messageAutoClear } from '../../redux/auth/auth.action';
+
+import Layout from '../Layout/layout';
 
 import './signin.scss';
 
 
-const SignIn=({signInStart,error,errorClear,match,loading})=>{
+
+const SignIn=({
+    signInStart,
+    error,
+    errorClear,
+    match,
+    loading,
+    isAuth,
+    role,
+    })=>{
 
    /*  const [userCredential,setUserCredential]=useState({
         email:'',
@@ -30,6 +42,15 @@ const SignIn=({signInStart,error,errorClear,match,loading})=>{
        
         setUserCredential({...userCredential});
     } */
+    const redirectUser=()=>{
+        if(isAuth){
+            if(role===1){
+                return <Redirect to="/adminDashboard"/>
+            }else{
+               return <Redirect to="/userDashboard" />
+            }
+        }
+    }
 
     const initialValues={
             email:'',
@@ -50,20 +71,15 @@ const SignIn=({signInStart,error,errorClear,match,loading})=>{
         
     });
    
-    const showError=()=>{
-        if(error){
-            setTimeout(()=>{
-                errorClear();
-            },5000);
-        }
-       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
-    };
+    
+  
 
 return(
-        <div className="signin">
+    <Layout>
+     <div className="signin">
             <h2>Have an account ?</h2>
             <p>Sign In with your Email</p>
-            {showError()}
+            <ErrorMessage error={error} errorClear={errorClear}/>
             <Formik 
                 initialValues={initialValues}
                 validationSchema={validationSchema}
@@ -92,13 +108,16 @@ return(
                     </div>
                 </Form>
             </Formik>
-           
+           {redirectUser()}
     </div>
+    </Layout>
 )
 }
 const mapStateToProps=state=>({
 error:state.auth.errors,
-loading:state.auth.requesting
+loading:state.auth.requesting,
+isAuth:state.auth.isAuthenticated,
+role:state.auth.role
 });
 const mapDispatchToProps=dispatch=>({
     signInStart:(data)=>dispatch(signInStart(data)),

@@ -39,7 +39,7 @@ passport.use('googleToken',new GoogleStrategy({
     passReqToCallback:true
 },async(req,accessToken,refreshToken,profile,done)=>{
 try{
-
+console.log(profile);
  const existing = await User.findOne({"google.id":profile.id});
 
  
@@ -52,8 +52,10 @@ try{
      method:'google',
      google:{
          id:profile.id,
-         email:profile.emails[0].value
-     }
+         email:profile.emails[0].value,
+         
+     },
+     name:profile._json.name
  });
  await newUser.save();
  return done(null,newUser,{message:"New user"});

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {connect} from 'react-redux';
-import { Formik , Form , Field , ErrorMessage} from 'formik';
+import { Formik , Form , Field } from 'formik';
 import * as Yup from 'yup';
 
 import FormInput from '../formInput/formInput';
 import CustomButton from '../customButton/customButton';
 import Loader from '../loader/loader';
+import ErrorMessage from '../errorMessage/errorMessage';
+import Layout from '../Layout/layout';
 import { errorAutoClear,getResetForm } from '../../redux/auth/auth.action';
 
 import './reset.scss';
@@ -37,20 +39,13 @@ const GetResetForm=({getResetForm,loading,error,errorClear})=>{
         .email('Invalid Email')
 
     });
-    const showError=()=>{
-        if(error){
-            setTimeout(()=>{
-                errorClear();
-            },5000);
-        }
-       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
-    }
+ 
     return(
-        <div className="reset">
+        <Layout>
+            <div className="reset">
                     <h2>Need Password Recovery ?</h2>
                     <p>Enter your email</p>
-                  
-                    {showError()} 
+                    <ErrorMessage error={error} errorClear={errorClear}/>
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
@@ -75,6 +70,7 @@ const GetResetForm=({getResetForm,loading,error,errorClear})=>{
                         </Formik>
                    
         </div>
+        </Layout>
            
     )
 }
