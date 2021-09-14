@@ -1,0 +1,21 @@
+.cart-icon{
+    position: relative;
+    margin: 0 20px;
+    img{
+        width: 30px;
+        height: auto;
+    }
+    span{
+        position: absolute;
+        background:rgb(44, 44, 44);
+        border-radius: 100%;
+        color: rgb(252, 252, 252);
+        width: 18px;
+        height: 18px;
+        right: -12px;
+        top: -2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

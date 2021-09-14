@@ -75,8 +75,9 @@ payload:data
 
 
 
-export const signOutStart=()=>({
-    type:authActiontype.SIGNOUT_START
+export const signOutStart=(history)=>({
+    type:authActiontype.SIGNOUT_START,
+    payload:history
     
 })
 export const signOutSuccess=()=>({

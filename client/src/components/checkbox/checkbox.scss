@@ -1,0 +1,7 @@
+.check_list_items{
+    list-style-type: none;
+    input[type="checkbox"]{
+        margin-right: 5px;
+    }
+    label{margin-bottom: 0;}
+}

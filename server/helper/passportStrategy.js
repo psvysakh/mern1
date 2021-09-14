@@ -3,7 +3,6 @@ const passport=require('passport'); //  passport package
 require('../passport'); // calling config 
 
 module.exports.passportJwt=function(req, res, next) {
-  
     passport.authenticate('jwt', function(err, user, info) { // eg: calling config through package
         if (err) { 
             console.log(`Internal Error`,err);

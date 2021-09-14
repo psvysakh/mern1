@@ -1,0 +1,30 @@
+.cart-item-drop{
+    display: flex;
+    margin-bottom: 10px;
+    img{
+      width: 60px !important;
+      height: auto;
+      margin-right: 5px;
+    }
+    .name{
+        display: block;
+        margin-bottom: 5px;
+    }
+   .cart-update{
+       width: 50px;
+       display: flex;
+       margin-top: 10px;
+        justify-content: space-between;
+        .remove,
+        .add{
+            width: 15px;
+            height: 15px;
+            background: rgb(43, 43, 43);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+   }
+}

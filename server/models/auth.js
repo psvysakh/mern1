@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     method:{
-        type:String,
+        type:[String],
         enum:['local','google'],
         required:true
     },

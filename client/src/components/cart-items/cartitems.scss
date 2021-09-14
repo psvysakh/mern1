@@ -1,0 +1,33 @@
+.cartitems-item{
+    display: flex;
+    img{
+        width: 80px !important;
+        height: auto;
+    }
+    .item-body{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid rgb(238, 238, 238);
+        padding: 10px 0;
+        .item-block{
+            width: 23%;
+            &:last-child{
+                width: 8%;
+            }
+            &.add{
+                display: flex;
+                span{
+                    margin: 0 10px;
+                }
+                .sub,
+                .add{
+                    cursor: pointer;
+                }
+            }
+            .remove{
+                cursor: pointer;
+            }
+        }
+    }
+}

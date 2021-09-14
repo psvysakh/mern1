@@ -13,17 +13,20 @@ const User = require('./models/auth');
 passport.use(new JwtStrategy({
     jwtFromRequest:ExtractJwt.fromHeader('authorization'),
     secretOrKey:process.env.JWT_SECRET,
-    passReqToCallback:true
-},async (req,payload,done)=>{
+    ignoreExpiration:false
+    
+},async (payload,done)=>{
 console.log(`received payload`,payload);
     try{
         //find user from token
-        const user = await User.findById({_id:payload._id});
+        const user = await User.findById({_id:payload.sub});
         
         //if user doesn't exist, handle
         if(!user){return done(null,false,{message:"User not existing!"})}
         //otherwise, return user
+        
         return done(null,user,{message:"User Found"});
+        
     }catch(error){
         return done(error,false);
     }
@@ -35,19 +38,43 @@ console.log(`received payload`,payload);
 
 passport.use('googleToken',new GoogleStrategy({
     clientID:'580298208669-lbhqf67ulguuhi0siq9ad9dmis4370g3.apps.googleusercontent.com',
-    clientSecret:'4xG6C8IUXdX4ZuYCQp5lrCb3',
-    passReqToCallback:true
-},async(req,accessToken,refreshToken,profile,done)=>{
+    clientSecret:'4xG6C8IUXdX4ZuYCQp5lrCb3'
+},async(accessToken,refreshToken,profile,done)=>{
+  
 try{
-console.log(profile);
- const existing = await User.findOne({"google.id":profile.id});
 
- 
- if(existing){
+//Checking already have signed in as Google User
+ const googleUserexisting = await User.findOne({"google.id":profile.id});
+
+ //IF exist then returns the same
+ if(googleUserexisting){
+
     console.log(`user already existing in Database`); 
-    return done(null,existing,{message:"User existing"})}
 
+    return done(null,googleUserexisting,{message:"User existing"})
+}
+
+//If not Google User, but Local User with Same Email ID, then Link Google Account with this User
+
+const localWithSameEmail = await User.findOne({"local.email":profile.emails[0].value});
+
+if(localWithSameEmail){
+
+    localWithSameEmail.method.push('google');
+
+    localWithSameEmail.google={
+        id:profile.id,
+        email:profile.emails[0].value
+    }
+
+    await localWithSameEmail.save(); 
+
+    return done(null,localWithSameEmail,{message:"Found you as a local with Same Email"});
+}
+
+// IF no GoogleAccount and not a user with Same Email ID, then Add as New Google User
     console.log(`user not existing ,we are creating new one`); 
+
  const newUser = new User({
      method:'google',
      google:{
@@ -57,8 +84,11 @@ console.log(profile);
      },
      name:profile._json.name
  });
+
  await newUser.save();
+
  return done(null,newUser,{message:"New user"});
+
 }catch(error){
     return done(error,false);
 }
@@ -70,9 +100,8 @@ console.log(profile);
 // LOCAL Strategy
 
 passport.use(new LocalStrategy({
-    usernameField:'email',
-    passReqToCallback:true
-},async (req,email,password,done)=>{
+    usernameField:'email'
+},async (email,password,done)=>{
     try{
         const user = await User.findOne({"local.email":email});
         

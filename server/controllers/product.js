@@ -24,6 +24,7 @@ exports.read=(req,res,next)=>{
 }
  
 exports.create = (req,res,next)=>{
+    console.log(req.body);
    let form = new formidable.IncomingForm();
    form.keepExtensions=true;
    form.parse(req,(err,fields,files)=>{
@@ -46,7 +47,7 @@ exports.create = (req,res,next)=>{
         if(err){
             return res.status(400).json({error:err})
         }
-        res.status(200).json({result});
+        res.status(200).json({message:`${result.name} creation Successfull`});
     })
    });
    
@@ -55,14 +56,47 @@ exports.create = (req,res,next)=>{
 exports.remove =async (req,res,next)=>{
   try{
     let product = req.product;
+    console.log(product);
     await product.remove();
     res.status(200).json({message:"Product Deleted"});
   }catch(error){
     return res.status(400).json({error:err})
   }
 }
-
-exports.update = (req,res,next)=>{
+exports.update = async (req,res,next)=>{
+    
+    let form = new formidable.IncomingForm();
+    form.keepExtensions=true;
+    try{
+        let [fields, files] = await new Promise((resolve,reject)=>{
+            form.parse(req,(err,fields,files)=>{
+                if(err){
+                  reject(err);
+                  return;
+                }
+                resolve([fields,files]);
+               
+            })
+        });
+        let product = req.product;
+        product=_.extend(product,fields);
+        if(files.photo){
+            if(files.photo.size > 1000000){
+             return res.status(400).json({error:'Image should be less than 1mb'})
+            }
+        }
+ 
+        if(files.photo){
+            product.photo.data=fs.readFileSync(files.photo.path);
+            product.photo.contentType=files.photo.type;
+        }
+        await product.save();
+        res.status(200).json({message:"Product Updated"});
+    }catch(error){
+        return res.status(400).json({error:error});
+    }
+}
+/* exports.update = (req,res,next)=>{
     let form = new formidable.IncomingForm();
     form.keepExtensions=true;
     form.parse(req,(err,fields,files)=>{
@@ -89,7 +123,7 @@ exports.update = (req,res,next)=>{
          res.status(200).json({result});
      })
     });
-}
+} */
 
 // Sold - > list?order=desc&sortBy=sold&limit=2
 // Arrival - > list?order=desc&sortBy=createdAt&limit=2
@@ -98,7 +132,7 @@ exports.list = async(req,res,next)=>{
     let order = req.query.order ? req.query.order : 'asc';
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
     let limit= req.query.limit ? +req.query.limit : 6;
-    console.log(order,sortBy,typeof(limit));
+   
     try{
        const product= await Product.find()
         .select("-photo")
@@ -116,22 +150,48 @@ exports.listRelated = (req,res)=>{
     Product.find({_id:{$ne:req.product},category:req.product.category})
     .limit(limit)
     .populate('category','_id,name')
-    .exec((err,product)=>{
+    .exec((err,products)=>{
         if(err){
             return res.status(400).json({error:err});
         }
-        res.status(200).json(product);
+        
+        res.status(200).json(products);
     });
    
+}
+exports.listSearch=async (req,res,next)=>{
+    const query={}
+    if(req.query.search){
+        query.name={$regex:req.query.search, $options:'i'}
+        if(req.query.category && req.query.category !=='All'){
+            req.category = req.query.category
+        }
+        try{
+            const products = await Product.find(query)
+                            .select("-photo");
+           
+            res.status(200).json({products:products});
+        }catch(error){
+            res.status(400).json({
+                error: "Products not found"
+            });
+        }
+       
+    }
+    res.status(400).json({
+        error: "Products not found"
+    });
+    
+ 
 }
 
 exports.listBySearch = async(req, res, next) => {
     let order = req.body.order ? req.body.order : "desc";
     let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
-    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
-    let skip = parseInt(req.body.skip);
+    let limit = req.body.limit ? +(req.body.limit) : 100;
+    let skip = req.body.skip;
     let findArgs = {};
-
+    console.log(req.body);
     try{
         for (let key in req.body.filters) {
             if (req.body.filters[key].length > 0) {
@@ -146,13 +206,14 @@ exports.listBySearch = async(req, res, next) => {
                 }
             }
         }
-    
-        const data = await Product.find(findArgs)
+        console.log(findArgs);
+        let data = await Product.find(findArgs)
             .select("-photo")
             .populate("category")
             .sort([[sortBy, order]])
             .skip(skip)
             .limit(limit);
+           console.log(data.length,data);
         res.status(200).json({size: data.length,data});
            
     }catch(error){

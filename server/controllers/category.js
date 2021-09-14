@@ -21,14 +21,13 @@ exports.read=(req,res,next)=>{
 }
 
 exports.create =async (req,res,next)=>{
-    console.log(req.user,req.body);
+    console.log(`I GOT RENDERED`,req.body);
    try{
         const category = new Category(req.body);
         const data = await category.save();
-        
-        res.status(200).json({data});
+        res.status(200).json({message:`${data.name} is created`});
    }catch(error){
-    return res.status(400).json({error:error})
+    return res.status(400).json({error:"Category Should be unique"});
    }
 }
 exports.remove = async (req,res,next)=>{
@@ -45,16 +44,17 @@ exports.update = async (req,res,next)=>{
         const category = req.category;
         category.name = req.body.name;
         const updatedCategory=await category.save();
-        res.status(200).json({updatedCategory,message:"Category Updated"});
+        return res.status(200).json({updatedCategory,message:"Category Updated"});
     }catch(error){
         return res.status(400).json({error:error})
     }
 }
 exports.list =async (req,res,next)=>{
-    console.log(`Manged to reach category list`)
     try{
         const data=await Category.find();
-        res.status(200).json(data);
+        console.log(data);
+            return res.status(200).json({categories:data});
+        
     }catch(error){
         return res.status(400).json({error:error})
     }

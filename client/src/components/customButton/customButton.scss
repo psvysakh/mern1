@@ -1,6 +1,6 @@
 button{
     border-radius: 50px !important;
-    height: 45px;
+    /* height: px; */
     background: transparent;
     text-align: center;
   
@@ -19,6 +19,7 @@ button{
         background: rgba(11, 201, 74, 0.993);
         color:#fff;
     }
+    
     &.reset{
         background: rgba(11, 201, 74, 0.993);
         color:#fff;
@@ -31,6 +32,38 @@ button{
         border-radius: 100%;
         position: absolute;
     }
+    &.product{
+        background: rgba(11, 201, 74, 0.993);
+        color:#fff;
+    }
+    &.view{
+        border-radius: 0px !important;
+        background: rgb(235, 235, 235);
+        color: rgb(39, 39, 39);
+        border:0px;
+        
+    }
+    &.view-cart{
+        border-radius: 0px !important;
+        background: rgb(41, 41, 41);
+        border:0px;
+        a{
+            color: rgb(228, 228, 228);
+            text-decoration: none;
+        }
+    }
+    &.cart{
+        border-radius: 0px !important;
+        background: rgb(219, 68, 42);
+        color: #fff;
+        border:0px;
+    }
+    &.order{
+        background: rgb(41, 41, 41);
+        color: rgb(228, 228, 228);
+        border-radius: 0px !important;
+    }
+
 }
 
 button[type="submit"]{
@@ -48,6 +81,10 @@ button[type="submit"]{
         color:#fff;
     }
     &.reset:hover{
+        background: rgba(11, 182, 68, 0.993);
+        color:#fff;
+    }
+    &.product:hover{
         background: rgba(11, 182, 68, 0.993);
         color:#fff;
     }

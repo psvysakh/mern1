@@ -1,4 +1,4 @@
-import React,{ Component } from 'react';
+import React from 'react';
 import {Route,Redirect} from 'react-router-dom';
 
 import {connect} from 'react-redux';
@@ -8,7 +8,9 @@ const AdminRoute=({component: Component, isAuth,role, ...rest})=>{
         <Route 
         {...rest}
         render={props=>
-        isAuth && role===1 ? <Component {...props}/> :
+        isAuth && role===1 ? 
+            <Component {...props}/> 
+        :
         <Redirect 
             to={{
                 pathname:'/signin',

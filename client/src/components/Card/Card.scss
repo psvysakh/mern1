@@ -1,0 +1,20 @@
+.card.product{
+    min-height: 225px;
+    padding: 0;
+    h2{font-size: 22px;border:0px;}
+    .btn{
+        padding: 5px;
+        margin: 0 5px;
+        font-size: 16px;
+    }
+    .details{
+        padding: 10px;
+    }
+    a{
+        text-decoration: none;
+        color: #000;
+        &:hover{
+            color: rgb(107, 107, 107);
+        }
+    }
+}

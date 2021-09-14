@@ -58,7 +58,8 @@ const authReducer=(state=INITIAL_STATE,action)=>{
                 messages:action.payload,
                 errors:''
             }
-       
+       case authActiontype.SIGNOUT_SUCCESS:
+           return state;
         case authActiontype.CLEAR_ERROR:
         case authActiontype.CLEAR_MESSAGE:
             return{

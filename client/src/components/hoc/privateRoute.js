@@ -1,4 +1,4 @@
-import React,{ Component } from 'react';
+import React  from 'react';
 import {Route,Redirect} from 'react-router-dom';
 
 import {connect} from 'react-redux';
@@ -8,7 +8,7 @@ const PrivateRoute=({component: Component, isAuth,role, ...rest})=>{
         <Route 
         {...rest}
         render={props=>
-        isAuth && role===0 ? <Component {...props}/> :
+        isAuth ? <Component {...props}/> :
         <Redirect 
             to={{
                 pathname:'/signin',

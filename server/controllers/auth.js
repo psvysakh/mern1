@@ -13,13 +13,35 @@ const bcrypt = require('bcrypt');
 
 signToken=user=>{
   return jwt.sign({
-      email:user.email,
-      _id:user._id,
-      iat:new Date().getTime(),
-      exp:new Date().setDate(new Date().getDate() + 1)
-   },process.env.JWT_SECRET);
+      sub:user._id
+   },process.env.JWT_SECRET,
+   {
+      expiresIn: '1h'
+   });
 }
 
+
+sendMail=async(email,token,cb)=>{
+   const emailData = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'Account activation link',
+      html: `<h1>Please use the token to activate your account</h1>
+                <hr />
+                <p>This email may containe sensetive information</p>
+                <a href="${process.env.CLIENT_URL}/signup/verifyToken/${token}">Verify Now</a>
+            `
+    };
+
+    sgMail.send(emailData)
+    .then(sent=>{
+      cb(null,sent);
+      
+    }).catch(err=>{
+       cb(err,null);
+      
+    });
+}
 
 
 exports.signUp = async (req,res,next)=>{
@@ -38,10 +60,43 @@ exports.signUp = async (req,res,next)=>{
 
             if(existing){return res.status(401).json({error:"User already Existing!"})}
 
+           
             const buffer=crypto.randomBytes(32);  
             if(!buffer){return res.status(401).json({error:"please try again"})}    
             const token = buffer.toString('hex');
             const hashpass=await bcrypt.hash(password,12);
+
+            /* console.log(`New user token`,token); */
+
+            const sameGoogleEmail = await User.findOne({"google.email":email});
+
+            if(sameGoogleEmail){
+               
+               sameGoogleEmail.method.push('local');
+               sameGoogleEmail.local={
+                  email:email,
+                  password:hashpass,
+                  secretToken:token,
+                  isActive:false
+               }
+
+               await sameGoogleEmail.save();
+
+             
+            return  sendMail(email,token,(err,sent)=>{
+                  if(err){
+                     console.log(`sendgriderrors`,err);
+                  }
+                 
+                     console.log(`Status Success`,sent);
+                     return res.json({
+                        message: `Please check the mail and verify!`
+                      });
+                 
+               });
+            
+            }
+           
             const user = new User({
                method:'local',
                local:{
@@ -53,26 +108,21 @@ exports.signUp = async (req,res,next)=>{
               
                ...req.body,
             });
-            const emailData = {
-               from: process.env.EMAIL_FROM,
-               to: email,
-               subject: 'Account activation link',
-               html: `<h1>Please use the token to activate your account</h1>
-                         <p>${token}</p>
-                         <hr />
-                         <p>This email may containe sensetive information</p>
-                         <a href="${process.env.CLIENT_URL}/signup/verifyToken">${process.env.CLIENT_URL}/signup/verifyToken</a>
-                     `
-             };
+
             await user.save();
-            sgMail.send(emailData)
-               .then(sent=>{
+            
+            sendMail(email,token,(err,sent)=>{
+               if(err){
+                  console.log(`sendgriderrors`,err);
+               }
+               if(sent){
+                  console.log(`sendgriderrors`,sent);
                   return res.json({
                      message: `Please check the mail and verify!`
                    });
-               }).catch(err=>{
-                  console.log(`sendgriderrors`,err.response.body);
-               });
+               }
+            });
+           
          }catch(error){
             console.log(error);
             next(error);
@@ -91,7 +141,7 @@ exports.activation= async(req,res,next)=>{
                user.local.secretToken='';
                user.local.isActive=true;
 
-               await user.save((err,user)=>{
+                user.save((err,user)=>{
                   if (err) {
                      return res.status(401).json({
                        errors: "Issue saving user"
@@ -196,7 +246,7 @@ exports.resetPassword = async (req,res,next)=>{
       resetUser.local.resetToken=undefined;
       resetUser.local.resetTokenExpiry=undefined;
       
-      await resetUser.save((err,user)=>{
+       resetUser.save((err,user)=>{
          if (err) {
             return res.status(401).json({
               errors: "Issue saving user"

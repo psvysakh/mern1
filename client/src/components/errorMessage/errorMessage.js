@@ -1,14 +1,11 @@
 import React from 'react';
 
-const ErrorMessage =({error,errorClear})=>{
+const ErrorMessage =({errors})=>{
     const showError=()=>{
-        setTimeout(()=>{
-                errorClear();
-            },5000);
-       return <div className="alert alert-danger" role="alert" style={{display: error ? '' : 'none'}}>{error}</div>
+       return <div className="alert alert-danger" role="alert" style={{display: errors ? '' : 'none'}}>{errors}</div>
     }
     return(
-        error ? showError() : ''
+        errors ? showError() : ''
     )
 }
 

@@ -4,9 +4,21 @@
         height: 45px;
         border-radius: 50px;
         border: none;
+        
     }
     .error{
         color: rgb(240, 33, 33);
     }
+   
+    
+}
+select{
+    background: #e3e2ea;
+    height: 45px;
+    border-radius: 50px;
+    border: none;
+    width: 100%;
+    &:focus{outline: none;}
+    margin-bottom: 1rem;
 }
 
